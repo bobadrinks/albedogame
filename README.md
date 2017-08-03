@@ -4,9 +4,9 @@ A simple HTML5 game, built using HTML and JavaScript.
 ## Gameplay
 Everyone knows that penguins only live in Antarctica! But not you...you, my penguin friend, are in the Arctic. Well, sure, maybe you're lost, a little bit far from home - but the way I see it, you've got a mission.
 
-Belly-slide your way to victory! Bare ice is safe to slide on, but buy yourself more time by sliding through patches of dark ice to restore them to normal. Avoid any patches of snow-covered ice, since snow-covered ice reflects more light and keeps the water cool.
+Belly slide your way to victory! Bare ice is safe to slide on, but buy yourself more time by sliding through patches of dark ice to restore them to normal. Avoid any patches of snow-covered ice, since snow-covered ice reflects more light and keeps the water cool.
 
-As the game goes on, there will be less ice to slide on. More pools of water will appear in your path; jump over these or avoid them to keep your penguin bellysliding forward.
+As the game goes on, there will be less ice to slide on. More pools of water will appear in your path; jump over these or avoid them to keep your penguin belly sliding forward.
 
 ### Objective
 Keep your penguin alive as long as possible to earn a higher score! Unlock more items and maps as you go.
