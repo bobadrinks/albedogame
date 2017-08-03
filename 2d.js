@@ -1,5 +1,17 @@
+/**
+ * Name: joswei
+ * File name: 2d.js
+ * Description: Draws map and Sprite; controls gameplay.
+ * 
+ * Sources of Help: 
+ * Draw a Gradient - https://developer.mozilla.org/en-US/docs/Web/API/
+ *   CanvasRenderingContext2D/createLinearGradient
+ * Basic HTML Game Tutorial - https://developer.mozilla.org/en-US/docs/
+ *   Games/Tutorials/2D_Breakout_game_pure_JavaScript
+ */
+
 /* 
- * Creates a JSON Object to wrap everything nicely; includes func to initialize
+ * Context Object wraps everything nicely; includes func to initialize
  * canvas.
  */
 var Context = {
@@ -12,6 +24,7 @@ var Context = {
   }
 };
 
+/* Sprite object makes it easy to draw new images or patterns on your canvas */
 var Sprite = function(filename, is_pattern) {
   
   // Construct the object
@@ -62,112 +75,75 @@ var Sprite = function(filename, is_pattern) {
 
 };
 
+// Main functionality here
 $(document).ready(function() {
 
-    // Initialize Sprites, Load pictures...
-    // "canvas" string - we get Element by ID from the html file
+    /* "canvas" string - we get Element by ID from the html file */
     Context.create("canvas"); 
 
-    // Important for when you are drawing different shapes
-    Context.context.beginPath();
-    Context.context.rect(0, 0, 750, 800);
-    Context.context.fillStyle = "#000000";
-    Context.context.fill();
-    Context.context.closePath();
+    /* Draws background */
+    function drawBackground() {
+      /* Draw dark blue gradient background */
+      var gradient = Context.context.createLinearGradient(0, 0, 300, 0);
+      gradient.addColorStop(0, "#19198c");
+      gradient.addColorStop(1, "#00004c");
+      //gradient.addColorStop(0, "black");
+      //gradient.addColorStop(1, "white");
+      Context.context.beginPath();
+      Context.context.fillStyle = gradient;
+      Context.context.fillRect(0, 0, 750, 600);
+      Context.context.closePath();
+    }
 
-    // Image sources
-    var WALL = "http://www.tigrisgames.com/wall.png";
-    var CRATE = "http://www.tigrisgames.com/crate.png";
+    /* Image sources */
+    var PENGUIN = "assets/penguin.png";
+      //"https://raw.githubusercontent.com/joswei/albedogame/master/assets/penguin.png";
 
-    // Images on screen
-    var image = new Sprite(WALL, false);
-    var image2 = new Sprite(CRATE, false);
-    var pattern = new Sprite(CRATE, true);
-    var angle = 0;
-    // Ball starting position
-    var x = canvas.width/2;
-    var y = canvas.height - 30;
-    // Change in ball positions
+    /* Make a new Penguin Sprite */
+    var penguinImg = new Sprite(PENGUIN, false);
+
+    /* Penguin's starting position */
+    var xPos = canvas.width / 2;
+    var yPos = canvas.height / 2;
+
+    /* Penguin Movement */
     var dx = 2;
     var dy = -2;
-    // Ball dimensions
-    var ballRadius = 10;
-    // Paddle dimensions
-    var paddleHeight = 10;
-    var paddleWidth = 75;
-    // Paddle's starting point on x axis
-    var paddleX = (canvas.width - paddleWidth) / 2;
-    // Bools to check if left/right/spacebar are pressed
+
+    /* Bools to check if left/right/spacebar are pressed */
     var rightPressed = false;
     var leftPressed = false;
+    /* Is the game paused? */
     var paused = false;
-    
-    // Obstacle position
-    var obstacleXPos = 160;
-    var obstacleYPos = 160;
-    // Obstacle dimensions
-    var obstacleWidth = 300;
-    var obstacleHeight = 100;
 
-    // Score
+    /* Padding for text */
+    var horizPadding = 10;
+    var vertPadding = 30;
+    
+    /* Keeps track of score */
     var score = 0;
-    // Lives
-    var lives = 5;
+    var scoreXPos = 8;
+    var scoreYPos = 20;
 
-    // Brick variables
-    var brickRowCount = 3;
-    var brickColumnCount = 7;
-    var numBricks = brickRowCount * brickColumnCount;
-    var brickWidth = 75;
-    var brickHeight = 20;
-    var brickPadding = 10;
-    var brickOffsetTop = 30;
-    var brickOffsetLeft = 30;
+    /* Time elapsed */
+    var timeElapsed = 0;
+    var timeXPos = canvas.width - 200;
+    var timeYPos = 20;
 
-    var bricks = [];
-    for (c = 0; c < brickColumnCount; c++) {
-      bricks[c] = [];
-      for (r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = {x: 0, y: 0, status: 1};
-      }
-    }
+    /* Variables for ice */
+    var iceWidth = 150;
+    var iceHeight = 200;
 
-    // Function draws bricks on screen
-    function drawBricks() {
-      for (c = 0; c < brickColumnCount; c++) {
-        for (r = 0; r < brickRowCount; r++) {
-          if (bricks[c][r].status == 1) {
-            var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-            var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            Context.context.beginPath();
-            Context.context.rect(brickX, brickY, brickWidth, brickHeight);
-            Context.context.fillStyle = "#FFFFFF";
-            Context.context.fill();
-            Context.context.closePath();
-          }
-        }
-      }
-    }
+    /* Penguin dimensions */
+    var penguinWidth = 150;
+    var penguinHeight = 150;
 
-    // Function draws ball on screen
-    function drawBall() {
-        Context.context.beginPath();
-        Context.context.arc(x, y, ballRadius, 0, Math.PI*2);
-        Context.context.fillStyle = "#FFFFFF";
-        Context.context.fill();
-        Context.context.closePath();
-    }
-    
-    // Function draws paddle on screen
-    function drawPaddle() {
-      Context.context.beginPath();
-      Context.context.rect(paddleX, canvas.height - paddleHeight, paddleWidth,
-          paddleHeight);
-      Context.context.fillStyle = "#FFFFFF";
-      Context.context.fill();
-      Context.context.closePath();
+    /* Coins */
+    var coinImage = new Image();
+    coinImage.src = "assets/coin-sprite-animation.png";
+
+    /* Function draws ice on screen, either white, */
+    function drawIce() {
     }
 
     // loops
@@ -176,63 +152,16 @@ $(document).ready(function() {
         drawPause();
         return;
       }
-        Context.context.fillStyle = "#000000";
-        Context.context.fillRect(0, 0, 800, 800);
+      drawBackground();
+      
+      penguinImg.draw(xPos, yPos, penguinWidth, penguinHeight);
 
-        //image.draw(0, 0, 64, 64);
-        //image.draw(0, 74, 256, 32);
-        pattern.draw(obstacleXPos, obstacleYPos, obstacleWidth, obstacleHeight);
-
-        /*
-        image.rotate(115, 160, angle += 3.0);
-        image2.rotate(115, 260, -angle/2);
-        */
-
-        drawBricks();
-        drawBall();
-        drawPaddle();
-        drawScore();
-        drawLives();
-        collisionDetection();
-        
-        if (x + dx + ballRadius > obstacleXPos && x + dx - ballRadius < obstacleXPos +
-            obstacleWidth && y + dy + ballRadius > obstacleYPos && y + dy + ballRadius <
-            obstacleYPos + obstacleHeight) {
-
-          dx = -dx;
-        }
-        if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-          dx = -dx;
-        }
-        if (y + dy < ballRadius) {
-          dy = -dy;
-        } else if (y + dy > canvas.height - ballRadius) {
-          if (x > paddleX && x < paddleX + paddleWidth) {
-            dy = -dy;
-          } else {
-            lives--;
-            if (!lives) {
-              alert("GAME OVER");
-              document.location.reload();
-            } else {
-              x = canvas.width / 2;
-              y = canvas.height - 30;
-              dx = 2;
-              dy = -2;
-              paddleX = (canvas.width - paddleWidth) / 2;
-            }
-          }
-        }
-        if (rightPressed && paddleX < canvas.width - paddleWidth) {
-          paddleX += 7;
-        } else if (leftPressed && paddleX > 0) {
-          paddleX -= 7;
-        } else {
-          paddleX += 0;
-        }
-
-        x += dx;
-        y += dy;
+      drawScore();
+      drawTimeElapsed();
+      collisionDetection();
+      
+      //xPos += dx;
+      //yPos += dy;
 
     }
 
@@ -263,49 +192,34 @@ $(document).ready(function() {
     function drawPause() {
       Context.context.font = "30px Arial";
       Context.context.fillStyle = "#FFFFFF";
-      Context.context.fillText("GAME PAUSED", 200, 200);
+      Context.context.fillText("GAME PAUSED", 
+          canvas.width / 3, canvas.height / 4);
       Context.context.font = "16px Arial";
-      Context.context.fillText("Press Spacebar to Resume", 210, 230);
+      Context.context.fillText("Press Spacebar to Resume",
+          canvas.width / 3 + horizPadding, canvas.height / 4 + vertPadding);
     }
 
     /* Function for collision detection that will loop through bricks and
      * compare each brick's pos with ball's pos
      */
     function collisionDetection() {
-      for (c = 0; c < brickColumnCount; c++) {
-        for (r = 0; r < brickRowCount; r++) {
-          var b = bricks[c][r];
-          if (b.status == 1) {
-            // If center of ball is inside brick's coordinates, change dir of ball
-            if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y +
-                brickHeight) {
-              dy = -dy;
-              b.status = 0;
-              score += lives;
-              numBricks--;
-              if (numBricks == 0) {
-                alert("Congratulations, you won the game! Press OK to play again.");
-                document.location.reload();
-              }
-            }
-          }
-        }
-      }
     }
 
     // Function to keep track of and draw lives
-    function drawLives() {
+    function drawTimeElapsed() {
       Context.context.font = "16px Arial";
+      /* White text */
       Context.context.fillStyle = "#FFFFFF";
-      Context.context.fillText("Lives: " + lives, canvas.width - 65,
-          canvas.height - 20);
+      Context.context.fillText("Time Elapsed: " + timeElapsed,
+          timeXPos, timeYPos);
     }
 
     // Function to create and update score display
     function drawScore() {
       Context.context.font = "16px Arial";
+      /* White text */
       Context.context.fillStyle = "#FFFFFF";
-      Context.context.fillText("Score: " + score, 8, 20);
+      Context.context.fillText("Score: " + score, scoreXPos, scoreYPos);
     }
 
     setInterval(draw, 10);
