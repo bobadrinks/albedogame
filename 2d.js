@@ -24,57 +24,6 @@ var Context = {
   }
 };
 
-/* Sprite object makes it easy to draw new images or patterns on your canvas */
-var Sprite = function(filename, is_pattern) {
-  
-  // Construct the object
-  this.image = null;
-  this.pattern = null;
-  this.TO_RADIANS = Math.PI/180;
-
-  // Check to make sure filename is not undefined
-  if (filename != undefined && filename != "" && filename != null) {
-    this.image = new Image();
-    this.image.src = filename;
-
-    if (is_pattern) {
-      this.pattern = Context.context.createPattern(this.image, 'repeat');
-    }
-  } else {
-    console.log("Unable to load sprite.");
-  }
-
-  this.draw = function(x, y, w, h) {
-    // Is this a Pattern?
-    if (this.pattern != null) {
-      Context.context.fillStyle = this.pattern;
-      Context.context.fillRect(x, y, w, h);
-    } else {
-      // If not a Pattern, then this is an Image
-      if (w != undefined || h != undefined) {
-        Context.context.drawImage(this.image, x, y, 
-                                  this.image.width,
-                                  this.image.height);
-      } else {
-        // Stretched
-        Context.context.drawImage(this.image, x, y, w, h);
-      }
-    }
-  };
-
-  this.rotate = function(x, y, angle) {
-    // Save and restore state of our Context
-    Context.context.save();
-    Context.context.translate(x, y);
-    Context.context.rotate(angle * this.TO_RADIANS);
-    Context.context.drawImage(this.image, 
-                            -(this.image.width/2),
-                            -(this.image.height/2));
-    Context.context.restore();
-  };
-
-};
-
 // Main functionality here
 $(document).ready(function() {
 
@@ -94,13 +43,6 @@ $(document).ready(function() {
       Context.context.fillRect(0, 0, 750, 600);
       Context.context.closePath();
     }
-
-    /* Image sources */
-    var PENGUIN = "assets/penguin.png";
-      //"https://raw.githubusercontent.com/joswei/albedogame/master/assets/penguin.png";
-
-    /* Make a new Penguin Sprite */
-    var penguinImg = new Sprite(PENGUIN, false);
 
     /* Penguin's starting position */
     var xPos = canvas.width / 2;
@@ -138,10 +80,6 @@ $(document).ready(function() {
     var penguinWidth = 150;
     var penguinHeight = 150;
 
-    /* Coins */
-    var coinImage = new Image();
-    coinImage.src = "assets/coin-sprite-animation.png";
-
     /* Function draws ice on screen, either white, */
     function drawIce() {
     }
@@ -153,8 +91,10 @@ $(document).ready(function() {
         return;
       }
       drawBackground();
-      
-      penguinImg.draw(xPos, yPos, penguinWidth, penguinHeight);
+      var penguinImg = new Image(penguinWidth, penguinHeight); 
+      penguinImg.src = "assets/penguin.png";
+      Context.context.drawImage(penguinImg, xPos, yPos, 
+          penguinWidth, penguinHeight);
 
       drawScore();
       drawTimeElapsed();
