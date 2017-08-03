@@ -2,7 +2,7 @@
 A simple HTML5 game, built using HTML and JavaScript.
 
 ## Gameplay
-Your penguin friends from Antarctica are lost in the Arctic, and they've got a mission.
+Everyone knows that penguins only live in Antarctica! But not you. Well, you might be lost in the Arctic, but you've got a mission.
 
 Belly-slide your way to victory! Bare ice is safe to slide on, but buy yourself more time by sliding through patches of dark ice to restore them to normal. Avoid any patches of snow-covered ice, since snow-covered ice reflects more light and keeps the water cool.
 
