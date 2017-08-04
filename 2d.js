@@ -45,12 +45,13 @@ $(document).ready(function() {
     }
 
     /* Penguin's starting position */
-    var xPos = canvas.width / 2;
-    var yPos = canvas.height / 2;
+    var xPadding = 60;
+    var yPadding = 150;
+    var xPos = canvas.width / 2 - xPadding;
+    var yPos = canvas.height / 2 + yPadding;
 
     /* Penguin Movement */
-    var dx = 2;
-    var dy = -2;
+    var dx = 0;
 
     /* Bools to check if left/right/spacebar are pressed */
     var rightPressed = false;
@@ -73,12 +74,14 @@ $(document).ready(function() {
     var timeYPos = 20;
 
     /* Variables for ice */
-    var iceWidth = 150;
-    var iceHeight = 200;
+    var iceWidth = 100;
+    var iceHeight = 100;
+    var iceXPos = 130;
+    var iceYPos = 30;
 
     /* Penguin dimensions */
-    var penguinWidth = 150;
-    var penguinHeight = 150;
+    var penguinWidth = 130;
+    var penguinHeight = 130;
 
     /* Function draws ice on screen, either white, */
     function drawIce() {
@@ -91,6 +94,66 @@ $(document).ready(function() {
         return;
       }
       drawBackground();
+
+      var cleanIceImg = new Image(iceWidth, iceHeight); 
+      cleanIceImg.src = "assets/cleanIce.png";
+      Context.context.drawImage(cleanIceImg, iceXPos, iceYPos, 
+          iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos - iceWidth, iceYPos, 
+          iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos, iceYPos + iceHeight, 
+          iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos - iceWidth, iceYPos +
+          iceHeight, iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + iceWidth, iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos, iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (2 * iceWidth), iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (3 * iceWidth), iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (4 * iceWidth), iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (4 * iceWidth), iceYPos +
+          (3 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (5 * iceWidth), iceYPos +
+          (1 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (5 * iceWidth), iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(cleanIceImg, iceXPos + (5 * iceWidth), iceYPos +
+          (3 * iceHeight), iceWidth, iceHeight);
+
+      var dirtyIceImg = new Image(iceWidth, iceHeight); 
+      dirtyIceImg.src = "assets/dirtyIce.png";
+      Context.context.drawImage(dirtyIceImg, iceXPos + iceWidth, iceYPos,
+          iceWidth, iceHeight);
+      Context.context.drawImage(dirtyIceImg, iceXPos + iceWidth, iceYPos +
+          iceHeight, iceWidth, iceHeight);
+      Context.context.drawImage(dirtyIceImg, iceXPos - iceWidth, iceYPos +
+          (2 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(dirtyIceImg, iceXPos + iceWidth, iceYPos +
+          (3 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(dirtyIceImg, iceXPos + iceWidth, iceYPos +
+          (4 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(dirtyIceImg, iceXPos + (2 * iceWidth), iceYPos +
+          (4 * iceHeight), iceWidth, iceHeight);
+
+      var snowIceImg = new Image(iceWidth, iceHeight);
+      snowIceImg.src = "assets/snowIce.png";
+      Context.context.drawImage(snowIceImg, iceXPos + (2 * iceWidth), iceYPos,
+          iceWidth, iceHeight);
+      Context.context.drawImage(snowIceImg, iceXPos + (2 * iceWidth), iceYPos +
+          iceHeight, iceWidth, iceHeight);
+      Context.context.drawImage(snowIceImg, iceXPos - iceWidth, iceYPos +
+          (3 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(snowIceImg, iceXPos, iceYPos +
+          (3 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(snowIceImg, iceXPos - iceWidth, iceYPos +
+          (4 * iceHeight), iceWidth, iceHeight);
+      Context.context.drawImage(snowIceImg, iceXPos, iceYPos +
+          (4 * iceHeight), iceWidth, iceHeight);
+
       var penguinImg = new Image(penguinWidth, penguinHeight); 
       penguinImg.src = "assets/penguin.png";
       Context.context.drawImage(penguinImg, xPos, yPos, 
@@ -100,8 +163,15 @@ $(document).ready(function() {
       drawTimeElapsed();
       collisionDetection();
       
-      //xPos += dx;
-      //yPos += dy;
+      if (rightPressed && !leftPressed) {
+        //dx = 2;
+      } else if (leftPressed && !rightPressed) {
+        //dx = -2;
+      } else {
+        dx = 0;
+      }
+
+      xPos += dx;
 
     }
 
@@ -119,8 +189,10 @@ $(document).ready(function() {
     function keyUpHandler(e) {
       if (e.keyCode == '39') {
         rightPressed = false;
+        xPos += iceWidth;
       } else if (e.keyCode == '37') {
         leftPressed = false;
+        xPos -= iceWidth;
       } else if (e.keyCode == '32') {
         paused = !paused;
       }
@@ -131,7 +203,7 @@ $(document).ready(function() {
      */
     function drawPause() {
       Context.context.font = "30px Arial";
-      Context.context.fillStyle = "#FFFFFF";
+      Context.context.fillStyle = "#FF0000";
       Context.context.fillText("GAME PAUSED", 
           canvas.width / 3, canvas.height / 4);
       Context.context.font = "16px Arial";
