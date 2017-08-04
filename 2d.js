@@ -147,6 +147,13 @@ $(document).ready(function() {
     var penguinWidth = 90;
     var penguinHeight = 90;
 
+    /* Directional arrowkey codes for KeyDown or KeyUp detection */
+    var DOWN = 40;
+    var RIGHT = 39;
+    var UP = 38;
+    var LEFT = 37;
+    var SPACEBAR = 32;
+
     /* Ice */ 
     var ice = [];
     for (i = 0; i < cols; i++) {
@@ -154,11 +161,18 @@ $(document).ready(function() {
       for (j = 0; j < rows; j++) {
         var randomNum = Math.random();
         var iceType = 0;
-        if (randomNum <= 0.5) {
+        /* At start, 0.1 chance of water appearing; increases with time */
+        var firstCutoff = 0.1;
+        /* Highest probability of bare ice appearing */
+        var secondCutoff = 0.65;
+        /* At start, 0.2 chance of snow ice */
+        var thirdCutoff = 0.85;
+        /* At start, 0.15 chance of dirty ice */
+        if (randomNum <= firstCutoff) {
           iceType = WATER;
-        } else if (randomNum > 0.5 && randomNum <= 0.7) {
+        } else if (randomNum > firstCutoff && randomNum <= secondCutoff) {
           iceType = BARE_ICE;
-        } else if (randomNum > 0.7 && randomNum <= 0.85) {
+        } else if (randomNum > secondCutoff && randomNum <= thirdCutoff) {
           iceType = SNOW_ICE;
         } else {
           iceType = DIRTY_ICE;
@@ -170,31 +184,36 @@ $(document).ready(function() {
     /* Function draws map on screen */
     function drawIce() {
 
+      /* Create images for clean ice, dirty ice, and snow-covered ice */
       var cleanIceImg = new Image(iceWidth, iceHeight); 
       cleanIceImg.src = "assets/cleanIce.png";
-
       var dirtyIceImg = new Image(iceWidth, iceHeight); 
       dirtyIceImg.src = "assets/dirtyIce.png";
-
       var snowIceImg = new Image(iceWidth, iceHeight);
       snowIceImg.src = "assets/snowIce.png";
 
-      // TODO Populate map with blocks of ice, randomly generated
-
+      /* Based on randomly generated 2d array, draw map */
       for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
+
+          /* Water, bare ice, snow-covered, or dirty ice */
           if (ice[i][j].type == WATER) {
+            /* Draw nothing if this block is water */
             continue;
           } else if (ice[i][j].type == BARE_ICE) {
+            /* Draw bare ice at correct (x, y) position on canvas */
             Context.context.drawImage(cleanIceImg, iceXPos + (i * iceWidth), 
                 iceYPos + (j * iceHeight), iceWidth, iceHeight);
           } else if (ice[i][j].type == SNOW_ICE) {
+            /* Draw snow-covered ice at correct (x, y) position on canvas */
             Context.context.drawImage(snowIceImg, iceXPos + (i * iceWidth), 
                 iceYPos + (j * iceHeight), iceWidth, iceHeight);
           } else {
+            /* Draw dirty ice at correct (x, y) position on canvas */
             Context.context.drawImage(dirtyIceImg, iceXPos + (i * iceWidth), 
                 iceYPos + (j * iceHeight), iceWidth, iceHeight);
           }
+
         }
       }
 
@@ -221,9 +240,11 @@ $(document).ready(function() {
       
     }
 
-    document.addEventListener("keydown", keyDownHandler, false);
+    //document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
-
+    
+    // TODO Do you even need a keyDownHandler at the moment?
+/*
     function keyDownHandler(e) {
       if (e.keyCode == '39') {
         rightPressed = true;
@@ -231,17 +252,17 @@ $(document).ready(function() {
         leftPressed = true;
       }
     }
-
+*/
     function keyUpHandler(e) {
-      if (e.keyCode == '40') {
+      if (e.keyCode == DOWN) {
         yPos += iceHeight;
-      } else if (e.keyCode == '39') {
+      } else if (e.keyCode == RIGHT) {
         xPos += iceWidth;
-      } else if (e.keyCode == '38') {
+      } else if (e.keyCode == UP) {
         yPos -= iceHeight;
-      } else if (e.keyCode == '37') {
+      } else if (e.keyCode == LEFT) {
         xPos -= iceWidth;
-      } else if (e.keyCode == '32') {
+      } else if (e.keyCode == SPACEBAR) {
         paused = !paused;
       }
     }
