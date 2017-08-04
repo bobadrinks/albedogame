@@ -7,6 +7,28 @@
     * { padding: 0; margin: 0; }
     canvas { display: block; margin: 50px auto; }
   </style>
+  <style>
+    .rotateRight {
+      -ms-transform: rotate(90deg);
+      -webkit-transform: rotate(90deg);
+      transform: rotate(90deg);
+    }
+    .rotateLeft {
+      -ms-transform: rotate(270deg);
+      -webkit-transform: rotate(270deg);
+      transform: rotate(270deg);
+    }
+    .rotateNone {
+      -ms-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    .rotateDown {
+      -ms-transform: rotate(180deg);
+      -webkit-transform: rotate(180deg);
+      transform: rotate(180deg);
+    }
+  </style>
 </head>
 <body>
   <canvas id = "canvas" width = "750" height = "600"
