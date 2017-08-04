@@ -132,32 +132,42 @@ $(document).ready(function() {
     /* Variables for ice */
     var iceWidth = 100;
     var iceHeight = 100;
-    var iceXPos = 130;
+    var iceXPos = 30;
     var iceYPos = 30;
+    /* Constants for type of ice or water */
+    var WATER = 0;
+    var BARE_ICE = 1;
+    var SNOW_ICE = 2;
+    var DIRTY_ICE = 3;
+    /* Number of rows and columns */
+    var rows = 7;
+    var cols = 7;
 
     /* Penguin dimensions */
     var penguinWidth = 90;
     var penguinHeight = 90;
 
+    /* Ice */ 
     var ice = [];
-    for (i = 0; i < rows; i++) {
+    for (i = 0; i < cols; i++) {
       ice[i] = [];
-      for (j = 0; j < cols; j++) {
+      for (j = 0; j < rows; j++) {
         var randomNum = Math.random();
+        var iceType = 0;
         if (randomNum <= 0.5) {
-          type = WATER;
+          iceType = WATER;
         } else if (randomNum > 0.5 && randomNum <= 0.7) {
-          type = BARE_ICE;
+          iceType = BARE_ICE;
         } else if (randomNum > 0.7 && randomNum <= 0.85) {
-          type = SNOW_ICE;
+          iceType = SNOW_ICE;
         } else {
-          type = DIRTY_ICE;
+          iceType = DIRTY_ICE;
         }
-        ice[i][j] = {x: 0, y: 0, iceType: type};
+        ice[i][j] = {x: 0, y: 0, type: iceType};
       }
     }
         
-    /* Function draws ice on screen, either white, */
+    /* Function draws map on screen */
     function drawIce() {
 
       var cleanIceImg = new Image(iceWidth, iceHeight); 
@@ -173,18 +183,21 @@ $(document).ready(function() {
 
       for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-          ;
+          if (ice[i][j].type == WATER) {
+            continue;
+          } else if (ice[i][j].type == BARE_ICE) {
+            Context.context.drawImage(cleanIceImg, iceXPos + (i * iceWidth), 
+                iceYPos + (j * iceHeight), iceWidth, iceHeight);
+          } else if (ice[i][j].type == SNOW_ICE) {
+            Context.context.drawImage(snowIceImg, iceXPos + (i * iceWidth), 
+                iceYPos + (j * iceHeight), iceWidth, iceHeight);
+          } else {
+            Context.context.drawImage(dirtyIceImg, iceXPos + (i * iceWidth), 
+                iceYPos + (j * iceHeight), iceWidth, iceHeight);
+          }
         }
       }
 
-      Context.context.drawImage(cleanIceImg, iceXPos, iceYPos - iceHeight, 
-          iceWidth, iceHeight);
-
-      Context.context.drawImage(dirtyIceImg, iceXPos + iceWidth, iceYPos,
-          iceWidth, iceHeight);
-
-      Context.context.drawImage(snowIceImg, iceXPos + (2 * iceWidth), iceYPos,
-          iceWidth, iceHeight);
     }
 
     // loops
