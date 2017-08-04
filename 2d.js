@@ -311,7 +311,7 @@ $(document).ready(function() {
       /* If penguin collides with BARE_ICE, change type to WATER */
         // TODO Currently, draw() loops too fast - all blocks will turn to water
         // because they turn first to bare ice and then to water
-
+        
         // Commented out this line until this bug is fixed
         //ice[i][j].type = WATER;
       }
