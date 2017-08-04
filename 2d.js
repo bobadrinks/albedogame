@@ -50,9 +50,6 @@ $(document).ready(function() {
     var xPos = canvas.width / 2 - xPadding;
     var yPos = canvas.height / 2 + yPadding;
 
-    /* Penguin Movement */
-    var dx = 0;
-
     /* Bools to check if left/right/spacebar are pressed */
     var rightPressed = false;
     var leftPressed = false;
@@ -163,16 +160,6 @@ $(document).ready(function() {
       drawTimeElapsed();
       collisionDetection();
       
-      if (rightPressed && !leftPressed) {
-        //dx = 2;
-      } else if (leftPressed && !rightPressed) {
-        //dx = -2;
-      } else {
-        dx = 0;
-      }
-
-      xPos += dx;
-
     }
 
     document.addEventListener("keydown", keyDownHandler, false);
