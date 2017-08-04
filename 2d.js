@@ -181,16 +181,16 @@ $(document).ready(function() {
       }
     }
         
+    /* Create images for clean ice, dirty ice, and snow-covered ice */
+    var cleanIceImg = new Image(iceWidth, iceHeight); 
+    cleanIceImg.src = "assets/cleanIce.png";
+    var dirtyIceImg = new Image(iceWidth, iceHeight); 
+    dirtyIceImg.src = "assets/dirtyIce.png";
+    var snowIceImg = new Image(iceWidth, iceHeight);
+    snowIceImg.src = "assets/snowIce.png";
+
     /* Function draws map on screen */
     function drawIce() {
-
-      /* Create images for clean ice, dirty ice, and snow-covered ice */
-      var cleanIceImg = new Image(iceWidth, iceHeight); 
-      cleanIceImg.src = "assets/cleanIce.png";
-      var dirtyIceImg = new Image(iceWidth, iceHeight); 
-      dirtyIceImg.src = "assets/dirtyIce.png";
-      var snowIceImg = new Image(iceWidth, iceHeight);
-      snowIceImg.src = "assets/snowIce.png";
 
       /* Based on randomly generated 2d array, draw map */
       for (i = 0; i < rows; i++) {
@@ -285,11 +285,36 @@ $(document).ready(function() {
      * block's type will change
      */
     function collisionDetection() {
-      /* If penguin collides with BARE_ICE, change type to WATER */
+
+      /* Calculate which block of ice the penguin is currently sitting on */
+      var i = Math.floor(xPos / iceWidth);
+      var j = Math.floor(yPos / iceHeight);
+      /* What type of ice is this block? */
+      var TYPE = ice[i][j].type;
+
+      if (TYPE == SNOW_ICE) {
       /* If penguin collides w/ SNOW_ICE, change type to BARE_ICE */
+        ice[i][j].type = BARE_ICE;
+        Context.context.drawImage(cleanIceImg, iceXPos + (i * iceWidth), 
+            iceYPos + (j * iceHeight), iceWidth, iceHeight);
+      } else if (TYPE == DIRTY_ICE) {
       /* If penguin collides w/ DIRTY_ICE, change type to BARE_ICE and
        * decrease health */
+        ice[i][j].type = BARE_ICE;
+        Context.context.drawImage(cleanIceImg, iceXPos + (i * iceWidth), 
+            iceYPos + (j * iceHeight), iceWidth, iceHeight);
+        // TODO decrease health
+      } else if (TYPE == WATER) {
       /* If penguin collides with WATER, game over */
+        // TODO game over 
+      } else if (TYPE == BARE_ICE) {
+      /* If penguin collides with BARE_ICE, change type to WATER */
+        // TODO Currently, draw() loops too fast - all blocks will turn to water
+        // because they turn first to bare ice and then to water
+
+        // Commented out this line until this bug is fixed
+        //ice[i][j].type = WATER;
+      }
     }
 
     // Function to keep track of time elapsed
