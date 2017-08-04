@@ -280,13 +280,19 @@ $(document).ready(function() {
           canvas.width / 3 + horizPadding, canvas.height / 4 + vertPadding);
     }
 
-    /* Function for collision detection that will loop through bricks and
-     * compare each brick's pos with ball's pos
+    /* Function for collision detection that will loop through ice blocks and
+     * compare each block's position with penguin position; if collided, ice
+     * block's type will change
      */
     function collisionDetection() {
+      /* If penguin collides with BARE_ICE, change type to WATER */
+      /* If penguin collides w/ SNOW_ICE, change type to BARE_ICE */
+      /* If penguin collides w/ DIRTY_ICE, change type to BARE_ICE and
+       * decrease health */
+      /* If penguin collides with WATER, game over */
     }
 
-    // Function to keep track of and draw lives
+    // Function to keep track of time elapsed
     function drawTimeElapsed() {
       Context.context.font = "16px Arial";
       /* Red text */
@@ -303,6 +309,7 @@ $(document).ready(function() {
       Context.context.fillText("Score: " + score, scoreXPos, scoreYPos);
     }
 
+    /* Tells the draw() function to repeat */
     setInterval(draw, 10);
 
 });
