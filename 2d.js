@@ -8,6 +8,8 @@
  *   CanvasRenderingContext2D/createLinearGradient
  * Basic HTML Game Tutorial - https://developer.mozilla.org/en-US/docs/
  *   Games/Tutorials/2D_Breakout_game_pure_JavaScript
+ * Draw rounded rect on HTML5 Canvas - https://stackoverflow.com/questions/
+ *   1255512/how-to-draw-a-rounded-rectangle-on-html-canvas
  */
 
 /* 
@@ -154,6 +156,15 @@ $(document).ready(function() {
     var LEFT = 37;
     var SPACEBAR = 32;
 
+    /* Healthbar */
+    var HEALTH_START = 128;
+    var health = HEALTH_START;
+    var healthIncrement = 16;
+    var HEALTH_BAR_HEIGHT = 10;
+    var RADIUS = 5;
+    var healthXPos = canvas.width - 150;
+    var healthYPos = 10;
+
     /* Ice */ 
     var ice = [];
     for (i = 0; i < cols; i++) {
@@ -235,8 +246,9 @@ $(document).ready(function() {
           penguinHeight);
 
       drawScore();
-      drawTimeElapsed();
-      collisionDetection();
+      drawHealth();
+      //drawTimeElapsed();
+      //collisionDetection();
       
     }
 
@@ -265,6 +277,7 @@ $(document).ready(function() {
       } else if (e.keyCode == SPACEBAR) {
         paused = !paused;
       }
+      collisionDetection();
     }
 
     /*
@@ -303,10 +316,19 @@ $(document).ready(function() {
         ice[i][j].type = BARE_ICE;
         Context.context.drawImage(cleanIceImg, iceXPos + (i * iceWidth), 
             iceYPos + (j * iceHeight), iceWidth, iceHeight);
-        // TODO decrease health
+        health -= healthIncrement;
+        if (health == 0) {
+          setTimeout(function() {
+            alert("GAME OVER");
+            document.location.reload();
+          }, 50);
+        }
       } else if (TYPE == WATER) {
       /* If penguin collides with WATER, game over */
-        // TODO game over 
+        setTimeout(function() {
+          alert("GAME OVER");
+          document.location.reload();
+        }, 50);
       } else if (TYPE == BARE_ICE) {
       /* If penguin collides with BARE_ICE, change type to WATER */
         // TODO Currently, draw() loops too fast - all blocks will turn to water
@@ -332,6 +354,83 @@ $(document).ready(function() {
       /* Red text */
       Context.context.fillStyle = "#FF0000";
       Context.context.fillText("Score: " + score, scoreXPos, scoreYPos);
+    }
+
+    // Function to create and draw healthbar
+    function drawHealth() {
+      Context.context.beginPath();
+
+      /* Bar underneath is white */
+      Context.context.fillStyle = "#ffffff";
+      roundRect(Context.context, healthXPos, healthYPos,
+          HEALTH_START, HEALTH_BAR_HEIGHT, RADIUS, false);
+      Context.context.fill();
+      Context.context.closePath();
+
+      /* Red text and health bar */
+      Context.context.beginPath();
+      Context.context.fillStyle = "#FF0000";
+      roundRect(Context.context, healthXPos, healthYPos,
+          health, HEALTH_BAR_HEIGHT, RADIUS, true, false);
+      Context.context.fill();
+
+      Context.context.font = "16px Arial";
+      Context.context.fillText("Health", healthXPos - 50, scoreYPos);
+      Context.context.closePath();
+    }
+
+    /**
+     * Draws a rounded rectangle using the current state of the canvas.
+     * If you omit the last three params, it will draw a rectangle
+     * outline with a 5 pixel border radius
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {Number} x The top left x coordinate
+     * @param {Number} y The top left y coordinate
+     * @param {Number} width The width of the rectangle
+     * @param {Number} height The height of the rectangle
+     * @param {Number} [radius = 5] The corner radius; It can also be an object 
+     *                 to specify different radii for corners
+     * @param {Number} [radius.tl = 0] Top left
+     * @param {Number} [radius.tr = 0] Top right
+     * @param {Number} [radius.br = 0] Bottom right
+     * @param {Number} [radius.bl = 0] Bottom left
+     * @param {Boolean} [fill = false] Whether to fill the rectangle.
+     * @param {Boolean} [stroke = true] Whether to stroke the rectangle.
+     */
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      if (typeof stroke == 'undefined') {
+        stroke = true;
+      }
+      if (typeof radius === 'undefined') {
+        radius = 5;
+      }
+      if (typeof radius === 'number') {
+        radius = {tl: radius, tr: radius, br: radius, bl: radius};
+      } else {
+        var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+        for (var side in defaultRadius) {
+          radius[side] = radius[side] || defaultRadius[side];
+        }
+      }
+      ctx.beginPath();
+      ctx.moveTo(x + radius.tl, y);
+      ctx.lineTo(x + width - radius.tr, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+      ctx.lineTo(x + width, y + height - radius.br);
+      ctx.quadraticCurveTo(x + width, y + height, 
+          x + width - radius.br, y + height);
+      ctx.lineTo(x + radius.bl, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+      ctx.lineTo(x, y + radius.tl);
+      ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+      ctx.closePath();
+      if (fill) {
+        ctx.fill();
+      }
+      if (stroke) {
+        ctx.stroke();
+      }
+
     }
 
     /* Tells the draw() function to repeat */
