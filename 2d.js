@@ -136,6 +136,8 @@ $(document).ready(function() {
     var iceHeight = 100;
     var iceXPos = 30;
     var iceYPos = 30;
+    var startX = 3;
+    var startY = 5;
     /* Constants for type of ice or water */
     var WATER = 0;
     var BARE_ICE = 1;
@@ -191,6 +193,7 @@ $(document).ready(function() {
         ice[i][j] = {x: 0, y: 0, type: iceType};
       }
     }
+    ice[startX][startY] = {x: 0, y: 0, type: BARE_ICE};
         
     /* Create images for clean ice, dirty ice, and snow-covered ice */
     var cleanIceImg = new Image(iceWidth, iceHeight); 
